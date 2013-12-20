@@ -1,7 +1,5 @@
 require 'active_record'
-require 'sinatra'
-# configures the database
-require_relative 'config/environments'
+require_relative 'config'
 require "sinatra/activerecord/rake"
 require_relative 'models/user'
 require_relative 'models/post'
@@ -11,8 +9,6 @@ require_relative 'models/post'
 namespace :db do
   desc "Seed Empty simple_blog2 Database"
   task :seed do
-    user0 = User.create(:last_name => "Onimous", :first_name => "Ann", :username => "anonymous")
-    puts "user #{user0.username} was created!"
     user1 = User.create(:last_name => "Abruzzi", :first_name => "Mario", :username => "abruzzi")
     puts "user #{user1.username} was created!"
     user2 = User.create(:last_name => "Ziecheck", :first_name => "Wendy", :username => "ziecheckw")
@@ -21,7 +17,7 @@ namespace :db do
     puts "user #{user3.username} was created!"
     user4 = User.create(:last_name => "Ramage", :first_name => "Ariel", :username => "ramagea")
     puts "user #{user4.username} was created!"
-    post = Post.create(:title => "Seed Post", :body => "I am part of your database from the start!", user: user0)
+    post = Post.create(:title => "Seed Post", :body => "I am part of your database from the start!")
     puts "post #{post.title} was created!"
   end
 end
