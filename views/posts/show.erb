@@ -19,8 +19,15 @@
       <input type="hidden" name="username" value="anonymous" />
     <% end %>
     <input type="hidden" name="post_id" value="<%= @post.id %>">
-    <textarea name="body"></textarea>
-    <input type="submit" value="add comment" />
+   <select name="code_selection">
+      <option>Plain Text</option>
+      <option>Ruby</option>
+      <option>Html</option>
+    </select>
+    <br>
+  
+      <textarea name="body"></textarea>
+  
+    <input type="submit" value="Post" />
   </form>
-</p>
 <a href="/posts">back</a>

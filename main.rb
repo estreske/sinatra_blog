@@ -1,6 +1,8 @@
 require 'sinatra'
+require 'sinatra/reloader'
 require 'sinatra/activerecord'
 require 'sinatra/activerecord/rake'
+require 'coderay'
 ActiveRecord::Base.logger = Logger.new(STDOUT)
 
 # configures the database
@@ -26,16 +28,16 @@ end
 get '/posts' do
   @username = session[:username] if session[:username]
   @users = User.all
-  @posts = Post.all
-  p @posts
+  @posts = Post.all.reverse
+  @user = User.where(username: @username).first
   erb :"posts/index"
+  
 end
 
 get '/post/:id' do
   @username = session[:username] if session[:username]
   id = params[:id].to_i
   @post = Post.find(id)
-
   erb :"posts/show"
 end
 
@@ -70,9 +72,7 @@ post '/posts/create' do
   @username = params[:username]
   title = params[:title]
   body = params[:body]
-  # user_id = params[:user_id].to_i
-  # create_new_post(title, body)
-  # user = User.find(user_id)
+  code_selection = params[:code_selection]
 
   user_matches = User.where("username='#{@username}'")
 
@@ -80,6 +80,14 @@ post '/posts/create' do
     user = user_matches.first
   else
     user = User.where("username='anonymous'")
+  end
+
+  if code_selection == "Ruby"
+    body = CodeRay.scan(body, :ruby).div(:line_numbers => :table)
+  elsif code_selection == "Html"
+    body = CodeRay.scan(body, :html).div(:line_numbers => :table)
+  elsif code_selection == "Plain Text"
+    body
   end
 
   Post.create(title: title, body: body, user: user)
@@ -140,6 +148,16 @@ post "/comments/create" do
   user ||= User.find_by_username("anonymous")
   post = Post.find(post_id)
 
+  code_selection = params[:code_selection]
+
+  if code_selection == "Ruby"
+    body = CodeRay.scan(body, :ruby).div(:line_numbers => :table)
+  elsif code_selection == "Html"
+    body = CodeRay.scan(body, :html).div(:line_numbers => :table)
+  elsif code_selection == "Plain Text"
+    body
+  end
+
   Comment.create(body: body, user: user, post: post)
   redirect "/post/#{post_id}"
 end
@@ -159,4 +177,9 @@ post '/sessions/create' do
 
   session[:username] = username
   redirect "/"
+end
+
+post '/logout' do 
+  session[:username] = nil
+  redirect '/'
 end

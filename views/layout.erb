@@ -10,11 +10,15 @@
   <a href="/posts">posts</a>
   <% if @username %>
   <span> Welcome, <%= @username %></span>
+
   <% else %>
     <a href="/users/new">register</a>
     <a href="/users/sign_in">login</a>
   <% end %>
 </nav>
+<form action='/logout' method='POST'>
+  <button>Logout</button>
+</form>
   <%= yield %>
 </body>
 </html>
